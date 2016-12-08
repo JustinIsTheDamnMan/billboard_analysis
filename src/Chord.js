@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import fs from 'fs'
-
+import Note from './Note'
 
 class Chord {
   constructor() {
@@ -40,7 +40,8 @@ class Chord {
         break
       default:
         if ( /^[A-G]$/.test( rootPart[0] ) ) {
-          result.root = { raw: rootPart }
+          result.root = Note.fromString( rootPart ) 
+          if ( result.root.isInvalid ) result.isInvalid = true
         } 
         else {
           result.isInvalid = true
