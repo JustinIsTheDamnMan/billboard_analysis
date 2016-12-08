@@ -9,5 +9,5 @@ Assuming that you have cloned this repository to
 cd ~/Projects/billboard-analysis
 git pull origin master
 npm install
-npm run tests
+npm run test
 ```
