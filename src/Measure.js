@@ -123,6 +123,36 @@ class Measure {
 
     return result
   }
+
+  toString() {
+    if ( this.isComplex ) return '*'
+
+    return _.map( this.chords, x => x.toString() ).join(' ')
+  }
+
+  toRelativeString() {
+    if ( this.isComplex ) return '*'
+
+    return _.map( this.chords, x => x.toRelativeString( this.tonic ) ).join(' ')
+  }
+
+  toRootThirdString() {
+    if ( this.isComplex ) return '*'
+
+    return _.map( this.chords, x => x.toRootThirdString( this.tonic ) ).join(' ')
+  }
+
+  toMaxSeventhString() {
+    if ( this.isComplex ) return '*'
+
+    return _.map( this.chords, x => x.toMaxSeventhString( this.tonic ) ).join(' ')
+  }
+
+  toGoalInversionString() {
+    if ( this.isComplex ) return '*'
+
+    return _.map( this.chords, x => x.toGoalInversionString( this.tonic ) ).join(' ')
+  }
 }
 
 export default Measure

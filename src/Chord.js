@@ -250,6 +250,10 @@ class Chord {
       return this.bass.raw
   }
 
+  toString() {
+    return this.raw
+  }
+
   toRelativeString( tonicNote ) {
     let specialValue = this.getSpecialValues()
     if ( specialValue ) return specialValue
