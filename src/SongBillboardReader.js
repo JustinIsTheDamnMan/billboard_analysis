@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import fs from 'fs'
 
-class BillboardFile {
+class SongBillboardReader {
   static parseLine( dataLine ) {
     let data = dataLine.trim()
     if (data[0] === '#')
@@ -77,29 +77,31 @@ class BillboardFile {
     return result
   }
 
-  constructor( filepath ) {
-    this.filepath = filepath
-    this.rawData = fs.readFileSync( filepath ).toString()
+  static parseFile( filepath ) {
+    let song = {}
+    song.filepath = filepath
+    song.rawData = fs.readFileSync( filepath ).toString()
+    
     let dataLines = _.compact(
                       _.map(
-                        this.rawData.split( '\n' ),
-                        line => BillboardFile.parseLine( line ) ))
+                        song.rawData.split( '\n' ),
+                        line => SongBillboardReader.parseLine( line ) ))
 
-    this.sections = []
+    song.sections = []
 
     let context = {}
     let currentSection = null 
     for (var dataLine of dataLines) {
 
       if ( dataLine.title )
-        this.title = dataLine.title
+        song.title = dataLine.title
 
       else if ( dataLine.artist )
-        this.artist = dataLine.artist
+        song.artist = dataLine.artist
 
       else if ( dataLine.metre ) {
         if ( currentSection ) {
-          this.sections.push( currentSection )
+          song.sections.push( currentSection )
           currentSection = null
         }
         context.metre = dataLine.metre
@@ -107,7 +109,7 @@ class BillboardFile {
 
       else if ( dataLine.tonic ) {
         if ( currentSection ) {
-          this.sections.push( currentSection )
+          song.sections.push( currentSection )
           currentSection = null
         }
         context.tonic = dataLine.tonic
@@ -115,23 +117,23 @@ class BillboardFile {
 
       else if ( dataLine.linetype === 'silence' ) {
         if ( currentSection ) {
-          this.sections.push( currentSection )
+          song.sections.push( currentSection )
           currentSection = null
         }
-        this.sections.push( { type: 'silence' } )
+        song.sections.push( { type: 'silence' } )
       }
 
       else if ( dataLine.linetype === 'end' ) {
         if ( currentSection ) {
-          this.sections.push( currentSection )
+          song.sections.push( currentSection )
           currentSection = null
         }
-        this.sections.push( { type: 'end' } )
+        song.sections.push( { type: 'end' } )
       }
 
       else if ( dataLine.section ) {
         if ( currentSection ) 
-          this.sections.push( currentSection )
+          song.sections.push( currentSection )
 
         currentSection = _.assign( {}, dataLine.section, context, 
                            { phrases: [], time: dataLine.timing } )
@@ -145,7 +147,9 @@ class BillboardFile {
         currentSection.phrases.push( 
             { time: dataLine.timing, phrase: dataLine.rawPhrase } )
     }
+
+    return song;
   }
 }
 
-export default BillboardFile
+export default SongBillboardReader

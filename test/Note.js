@@ -145,5 +145,32 @@ describe('Note', function() {
           })
       })
     })
+
+    describe('Interval measurements', function() {
+      it('should correctly identify equivalent notes', function() {
+
+        let equivalentNoteStrings = [
+              ['C#','Db'],['D#','Eb'],['F#','Gb'],['G#','Ab'],['A#','Bb']]
+
+        let equivalentNotes = _.map(equivalentNoteStrings,
+                                      x => [ Note.fromString( x[0] ),
+                                             Note.fromString( x[1] ) ])
+          
+        for ( var notePair of equivalentNotes ) {
+
+          Note.intervalLength( notePair[0], notePair[1] )
+            .should.equal(0)
+
+          Note.areEquivalent( notePair[0], notePair[1] ) 
+            .should.be.true
+
+          notePair[0].isEquivalentTo( notePair[1] )
+            .should.be.true
+
+          notePair[1].isEquivalentTo( notePair[0] )
+            .should.be.true
+        }
+      })
+    })
   })
 })

@@ -1,33 +1,33 @@
 import _ from 'lodash'
-import BillboardFile from '../src/BillboardFile'
+import SongBillboardReader from '../src/SongBillboardReader'
 
 const chai = require('chai')
 chai.use( require('chai-subset') )
 chai.should()
 
-describe('BillboardFile', function() {
-  describe('#constructor()', function() {
-    let billboardFile = {}
+describe('SongBillboardReader', function() {
+  describe('+parseFile', function() {
+    let song = {}
     const TEST_FILEPATH = 'source_data/McGill-Billboard/0021/salami_chords.txt' 
 
     before( function() {
-      billboardFile = new BillboardFile(TEST_FILEPATH)
+      song = SongBillboardReader.parseFile( TEST_FILEPATH )
     })
 
     it('should store filepath', function () {
-      billboardFile.filepath.should.equal(TEST_FILEPATH);
+      song.filepath.should.equal(TEST_FILEPATH);
     })
 
     it('should store the title and artist', function() {
-      billboardFile.should.containSubset({
+      song.should.containSubset({
         title: 'Just Can\'t Wait',
         artist: 'The J. Geils Band'
       })
     })
     
     it('should provide a list of correctly named and annotated sections', function() {
-      billboardFile.should.have.property('sections');
-      billboardFile.sections.should.containSubset([
+      song.should.have.property('sections');
+      song.sections.should.containSubset([
           { type: 'silence' },
           { label: 'A', type: 'intro', metre: '4/4', tonic: 'G' },
           { label: 'B', type: 'verse' , metre: '4/4', tonic: 'G' },
@@ -45,7 +45,7 @@ describe('BillboardFile', function() {
     })
 
     it('should correctly associate phrases to sections', function() {
-      billboardFile.sections.should.containSubset([
+      song.sections.should.containSubset([
           { type: 'silence' },
           { label: 'A', phrases: [ { time: '0.30185941' }, 
                                    { time: '6.665238095' }, 
@@ -62,7 +62,7 @@ describe('BillboardFile', function() {
   describe('+parseHashLine()', function() {
     it('should correctly parse a hash line', function() {
       let hashline = "# title: I'm still wearing (the same shoes)";
-      let result = BillboardFile.parseHashLine( hashline );
+      let result = SongBillboardReader.parseHashLine( hashline );
 
       result.should.have.property('title', "I'm still wearing (the same shoes)");
       result.should.have.property('linetype', 'annotation');
@@ -81,7 +81,7 @@ describe('BillboardFile', function() {
 
       let results = _.compact(
                       _.map(filetext.split('\n'), 
-                        line => BillboardFile.parseLine( line )));
+                        line => SongBillboardReader.parseLine( line )));
 
       results.should.have.lengthOf(6);
       results[0].should.have.property('timing','0.0');
@@ -103,7 +103,7 @@ describe('BillboardFile', function() {
 
       let results = _.compact(
                       _.map(filetext.split('\n'),
-                        line => BillboardFile.parseLine( line )));
+                        line => SongBillboardReader.parseLine( line )));
 
       results.should.have.lengthOf(6);
 
@@ -155,7 +155,7 @@ describe('BillboardFile', function() {
 
       let results = _.compact(
                       _.map(filetext.split('\n'),
-                        line => BillboardFile.parseLine( line )));
+                        line => SongBillboardReader.parseLine( line )));
 
       results.should.have.lengthOf(24);
       results[0].should.not.have.property('rawPhrase');
@@ -183,19 +183,19 @@ describe('BillboardFile', function() {
     })
 
     it("marks sections labeled as 'Z' as 'non-musical'", function() {
-      let result = BillboardFile.parseLine( '123.456 Z' )
+      let result = SongBillboardReader.parseLine( '123.456 Z' )
       result.should.have.property('linetype','non-musical')
       result.should.have.property('section')
       result.section.should.have.property('label','Z')
       result.section.should.not.have.property('type')
 
-      result = BillboardFile.parseLine('4.4e-2 Z, noise')
+      result = SongBillboardReader.parseLine('4.4e-2 Z, noise')
       result.should.have.property('linetype','non-musical')
       result.should.have.property('section')
       result.section.should.have.property('label','Z')
       result.section.should.have.property('type','noise')
 
-      result = BillboardFile.parseLine('146.866  Z\'\', talking')
+      result = SongBillboardReader.parseLine('146.866  Z\'\', talking')
       result.should.have.property('linetype','non-musical')
       result.should.have.property('section')
       result.section.should.have.property('label','Z\'\'')
