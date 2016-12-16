@@ -102,7 +102,13 @@ describe('SongPhrase', function() {
   })
 
   describe('Analysis', function() {
-    it ('aggregates maj/min totals from measures')
+    it ('aggregates maj/min totals from measures', function() {
+      let phraseString = 'C:1 . C:maj C:maj7 | C:5 | D:min6 . . B:1(9,b11,3)/9'
+      let songPhrase =
+        SongPhrase.fromString( phraseString, '4/4', 'C' )
+
+      
+    })
   })
 })
 

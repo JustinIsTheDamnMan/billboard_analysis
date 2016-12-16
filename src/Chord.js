@@ -270,7 +270,7 @@ class Chord {
   toRootThirdString( tonicNote ) {
     let specialValue = this.getSpecialValues()
     if ( specialValue ) {
-      if ( specialValue === '/1' ) return '1:none/1'
+      if ( specialValue === '/1' ) return ':none/1'
       else return specialValue
     }
 
@@ -282,10 +282,7 @@ class Chord {
 
   toMaxSeventhString( tonicNote ) {
     let specialValue = this.getSpecialValues()
-    if ( specialValue ) {
-      if ( specialValue === '/1' ) return '1/1'
-      else return specialValue
-    }
+    if ( specialValue ) return specialValue 
 
     let result = '' 
     let shorthand = null
@@ -336,8 +333,7 @@ class Chord {
 
   toGoalInversionString( tonicNote ) {
     let specialValue = this.getSpecialValues()
-    if ( specialValue ) 
-      return ( specialValue === '/1' ) ? '1:1/1' : specialValue 
+    if ( specialValue ) return specialValue 
 
     let relativeRoot = this.getRelativeRoot( tonicNote )
     if (! relativeRoot) return 'X'
