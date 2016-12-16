@@ -9,8 +9,7 @@ class Measure {
     this.beatValue = null
     this.beatsOverride = null
     this.beatValueOverride = null
-    this.nMajor = 0 
-    this.nMinor = 0 
+    this.majMinScore = 0 
     this.tonic = null
     this.chords = null
     this.isComplex = false
@@ -106,22 +105,34 @@ class Measure {
       result.error = "Could not expand " + result.chords.length + " chords to " + effectiveBeats + " beats."
     }
 
-    // Count major and minor chords
-
-    let minmajCount =
-      _.reduce( result.chords,
-                function( totals, nextChord ) { 
-                  return {
-                    nMajor: ( totals.nMajor + ( ( nextChord.isMajor ) ? 1 : 0 ) ),
-                    nMinor: ( totals.nMinor + ( ( nextChord.isMinor ) ? 1 : 0 ) )
-                  }
-                },
-                { nMajor: 0, nMinor: 0 } )
-
-    result.nMajor = minmajCount.nMajor
-    result.nMinor = minmajCount.nMinor
+    // Calculate majMinScore
+    result.majMinScore = this.calculateMajMinScore( result.tonic, result.chords )
 
     return result
+  }
+
+  static calculateMajMinScore( tonic, chords ) {
+    
+    if (! tonic ) return 0
+
+    let tonicChords = 
+      _.filter( chords,
+        chord => ( chord.root && chord.root.isEquivalentTo( tonic ) ) )
+
+    return _.reduce( tonicChords,
+      function( score, chord ) {
+        switch( Chord.determineMajorMinor( chord ) ) {
+          case 'major':
+            return score + 1
+            break
+          case 'minor':
+            return score - 1
+            break
+          default:
+            return score
+            break
+        }
+      }, 0 )
   }
 
   toString() {

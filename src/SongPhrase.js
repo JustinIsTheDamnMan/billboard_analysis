@@ -8,8 +8,7 @@ class SongPhrase {
     this.tonic = null
     this.raw = null
     this.measures = []
-    this.nMajor = 0
-    this.nMinor = 0
+    this.minMajScore = 0
     this.hasElision = false
     this.nRepeat = 0
     this.isInvalid = false
@@ -47,18 +46,11 @@ class SongPhrase {
     
     // Count major and minor chords
 
-    let minmajCount =
+    songPhrase.majMinScore =
       _.reduce( songPhrase.measures,
-                function( totals, nextMeasure ) { 
-                  return {
-                    nMajor: totals.nMajor + nextMeasure.nMajor,
-                    nMinor: totals.nMinor + nextMeasure.nMinor 
-                  }
-                },
-                { nMajor: 0, nMinor: 0 } )
-
-    songPhrase.nMajor = minmajCount.nMajor
-    songPhrase.nMinor = minmajCount.nMinor
+                function( score, measure ) { 
+                  return score + measure.majMinScore
+                }, 0 )
 
     return songPhrase
   }
