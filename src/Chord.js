@@ -1,7 +1,8 @@
-import _ from 'lodash'
-import Note from './Note'
-import Degree from './Degree'
+const _ = require( 'lodash' )
+const Note = require( './Note' )
+const Degree = require( './Degree' )
 
+module.exports =
 class Chord {
   constructor() {
     this.raw = null
@@ -341,5 +342,3 @@ class Chord {
     return relativeRoot + ":" + this.toMaxSeventhString( tonicNote )
   }
 }
-
-export default Chord

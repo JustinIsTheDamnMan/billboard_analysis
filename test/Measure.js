@@ -178,6 +178,7 @@ describe('The Measure', function() {
   })
 
   describe('calculates', function() {
+
     describe('the maj_min score', function() {
 
       let tonic = 'C'

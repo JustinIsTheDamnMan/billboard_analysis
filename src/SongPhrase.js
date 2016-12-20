@@ -1,6 +1,7 @@
-import _ from 'lodash'
-import Measure from './Measure'
+const _ = require('lodash')
+const Measure = require('./Measure')
 
+module.exports = 
 class SongPhrase {
   constructor() {
     this.timing = null
@@ -29,34 +30,36 @@ class SongPhrase {
     if ( tonic )  songPhrase.tonic = tonic.trim()
     if ( timing ) songPhrase.timing = timing.trim()
 
-    let measureStrings = phraseString.split('|')
-    measureStrings = _.map( measureStrings, x => x.trim() )
+    let measureStrings = 
+      phraseString
+        .split('|')
+        .map( x => x.trim() )
+        .filter( x => x )
     
     let annotations = 
       /(x[0-9]+)|([-][>])/.exec( _.takeRight( measureStrings ) )
 
     if ( annotations ) {
-      measureStrings = _.dropRight( measureStrings )
+      measureStrings.pop()
       if ( annotations[1] ) songPhrase.nRepeat = parseInt( annotations[1].slice(1) )
       if ( annotations[2] ) songPhrase.hasElision = true
     }
 
-    songPhrase.measures = _.map( measureStrings,
-                                 x => Measure.fromString(x, songPhrase.metre, songPhrase.tonic ) )
-    
+    songPhrase.measures = 
+      measureStrings
+        .map( x => Measure.fromString(x, songPhrase.metre, songPhrase.tonic ) )
+
     // Count major and minor chords
 
     songPhrase.majMinScore =
-      _.reduce( songPhrase.measures,
-                function( score, measure ) { 
-                  return score + measure.majMinScore
-                }, 0 )
+      songPhrase.measures.reduce( 
+          (score, measure) => score + measure.majMinScore, 0 ) 
 
     return songPhrase
   }
 
   toStrings() {
-    return _.map( this.measures, x => x.toString() )
+    return this.measures.map( x => x.toString() )
   }
 
   toString() {
@@ -64,7 +67,7 @@ class SongPhrase {
   }
 
   toRelativeStrings() {
-    return _.map( this.measures, x => x.toRelativeString( this.tonic ) )
+    return this.measures.map( x => x.toRelativeString( this.tonic ) )
   }
 
   toRelativeString() {
@@ -72,7 +75,7 @@ class SongPhrase {
   }
 
   toRootThirdStrings() {
-    return _.map( this.measures, x => x.toRootThirdString( this.tonic ) )
+    return this.measures.map( x => x.toRootThirdString( this.tonic ) )
   }
 
   toRootThirdString() {
@@ -80,7 +83,7 @@ class SongPhrase {
   }
 
   toMaxSeventhStrings() {
-    return _.map( this.measures, x => x.toMaxSeventhString( this.tonic ) )
+    return this.measures.map( x => x.toMaxSeventhString( this.tonic ) )
   }
 
   toMaxSeventhString() {
@@ -88,12 +91,10 @@ class SongPhrase {
   }
 
   toGoalInversionStrings() {
-    return _.map( this.measures, x => x.toGoalInversionString( this.tonic ) )
+    return this.measures.map( x => x.toGoalInversionString( this.tonic ) )
   }
 
   toGoalInversionString() {
     return this.toGoalInversionStrings().join(' | ')
   }
 }
-
-export default SongPhrase

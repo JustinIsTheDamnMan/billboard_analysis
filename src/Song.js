@@ -1,4 +1,4 @@
-class Song {
+module.exports = class Song {
   constructor() {
     this.id = null
     this.title = null
@@ -6,5 +6,3 @@ class Song {
     this.isMajor = null
   }
 }
-
-export default Song

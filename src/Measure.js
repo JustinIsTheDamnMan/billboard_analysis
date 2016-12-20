@@ -1,7 +1,8 @@
-import _ from 'lodash'
-import Chord from './Chord'
-import Note from './Note'
+const _     = require( 'lodash'  )
+const Chord = require( './Chord' )
+const Note  = require( './Note'  )
 
+module.exports =
 class Measure {
   constructor() {
     this.raw = null
@@ -165,6 +166,3 @@ class Measure {
     return _.map( this.chords, x => x.toGoalInversionString( this.tonic ) ).join(' ')
   }
 }
-
-export default Measure
-

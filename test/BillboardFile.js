@@ -2,60 +2,63 @@ import _ from 'lodash'
 import SongBillboardReader from '../src/SongBillboardReader'
 
 const chai = require('chai')
+const chaiAsPromised = require('chai-as-promised')
 chai.use( require('chai-subset') )
+chai.use( chaiAsPromised )
 chai.should()
 
 describe('SongBillboardReader', function() {
   describe('+parseFile', function() {
     let song = {}
-    const TEST_FILEPATH = 'source_data/McGill-Billboard/0021/salami_chords.txt' 
+    const TEST_FILEPATH = './source_data/McGill-Billboard/0021/salami_chords.txt' 
 
     before( function() {
       song = SongBillboardReader.parseFile( TEST_FILEPATH )
     })
 
     it('should store filepath', function () {
-      song.filepath.should.equal(TEST_FILEPATH);
+      return song.should.eventually.have.property('filepath', TEST_FILEPATH);
     })
 
     it('should store the title and artist', function() {
-      song.should.containSubset({
+      return song.should.eventually.containSubset({
         title: 'Just Can\'t Wait',
         artist: 'The J. Geils Band'
       })
     })
     
     it('should provide a list of correctly named and annotated sections', function() {
-      song.should.have.property('sections');
-      song.sections.should.containSubset([
+      return song.should.eventually.containSubset({
+        sections:[
           { type: 'silence' },
-          { label: 'A', type: 'intro', metre: '4/4', tonic: 'G' },
-          { label: 'B', type: 'verse' , metre: '4/4', tonic: 'G' },
-          { label: 'A', type: 'chorus' , metre: '4/4', tonic: 'G' },
-          { label: 'B', type: 'verse' , metre: '4/4', tonic: 'G' },
-          { label: 'A', type: 'chorus' , metre: '4/4', tonic: 'G' },
-          { label: 'C', type: 'bridge' , metre: '4/4', tonic: 'G' },
-          { label: 'A', type: 'solo' , metre: '4/4', tonic: 'G' },
-          { label: 'B\'', type: 'verse' , metre: '4/4', tonic: 'G' },
-          { label: 'A', type: 'chorus' , metre: '4/4', tonic: 'G' },
-          { label: 'A\'', type: 'coda' , metre: '4/4', tonic: 'G' },
+          { label: 'A', types: ['intro'], metre: '4/4', tonic: 'G' },
+          { label: 'B', types: ['verse'] , metre: '4/4', tonic: 'G' },
+          { label: 'A', types: ['chorus'] , metre: '4/4', tonic: 'G' },
+          { label: 'B', types: ['verse'] , metre: '4/4', tonic: 'G' },
+          { label: 'A', types: ['chorus'] , metre: '4/4', tonic: 'G' },
+          { label: 'C', types: ['bridge'] , metre: '4/4', tonic: 'G' },
+          { label: 'A', types: ['solo'] , metre: '4/4', tonic: 'G' },
+          { label: 'B\'', types: ['verse'] , metre: '4/4', tonic: 'G' },
+          { label: 'A', types: ['chorus'] , metre: '4/4', tonic: 'G' },
+          { label: 'A\'', types: ['coda'] , metre: '4/4', tonic: 'G' },
           { type: 'silence' },
           { type: 'end' }
-      ])
-    })
+       ]}
+    )})
 
     it('should correctly associate phrases to sections', function() {
-      song.sections.should.containSubset([
+      return song.should.eventually.containSubset({
+        sections:[
           { type: 'silence' },
-          { label: 'A', phrases: [ { time: '0.30185941' }, 
-                                   { time: '6.665238095' }, 
-                                   { time: '12.933151927' },
-                                   { time: '19.281927437' } ] },
-          { label: 'B', phrases: [ { time: '25.584920634' },
-                                   { time: '31.881655328' },
-                                   { time: '38.176077097' },
-                                   { time: '44.515328798' } ] }
-      ]);
+          { label: 'A', phrases: [ { timing: '0.30185941' }, 
+                                   { timing: '6.665238095' }, 
+                                   { timing: '12.933151927' },
+                                   { timing: '19.281927437' } ] },
+          { label: 'B', phrases: [ { timing: '25.584920634' },
+                                   { timing: '31.881655328' },
+                                   { timing: '38.176077097' },
+                                   { timing: '44.515328798' } ] }
+        ]})
     })
   })
 
@@ -107,6 +110,7 @@ describe('SongBillboardReader', function() {
 
       results.should.have.lengthOf(6);
 
+      console.log( JSON.stringify( results[1] ) )
       results[1].should.have.property('linetype','phrase');
       results[1].should.have.property('section');
       results[1].section.should.have.property('label', 'A');

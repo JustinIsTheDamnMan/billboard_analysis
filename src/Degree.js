@@ -1,5 +1,6 @@
-import _ from 'lodash'
+const _ = require( 'lodash' )
 
+module.exports =
 class Degree {
   constructor() {
     this.raw = null
@@ -77,5 +78,3 @@ class Degree {
     return result 
   }
 }
-
-export default Degree
