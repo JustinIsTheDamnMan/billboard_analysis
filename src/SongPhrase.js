@@ -58,43 +58,47 @@ class SongPhrase {
     return songPhrase
   }
 
-  toStrings() {
-    return this.measures.map( x => x.toString() )
+  toStrings( mapping ) {
+    return _.map( this.measures, x => x.toStrings( mapping ) )
   }
 
   toString() {
     return this.toStrings().join(' | ')
   }
 
-  toRelativeStrings() {
-    return this.measures.map( x => x.toRelativeString( this.tonic ) )
+  toRelativeStrings( mapping ) {
+    return _.map( this.measures, x => x.toRelativeStrings( mapping ) )
   }
 
   toRelativeString() {
     return this.toRelativeStrings().join(' | ')
   }
 
-  toRootThirdStrings() {
-    return this.measures.map( x => x.toRootThirdString( this.tonic ) )
+  toRootThirdStrings( mapping ) {
+    return _.map( this.measures, x => x.toRootThirdStrings( mapping ) )
   }
 
   toRootThirdString() {
     return this.toRootThirdStrings().join(' | ')
   }
 
-  toMaxSeventhStrings() {
-    return this.measures.map( x => x.toMaxSeventhString( this.tonic ) )
+  toMaxSeventhStrings( mapping ) {
+    return _.map( this.measures, x => x.toMaxSeventhStrings( mapping ) )
   }
 
   toMaxSeventhString() {
     return this.toMaxSeventhStrings().join(' | ')
   }
 
-  toGoalInversionStrings() {
-    return this.measures.map( x => x.toGoalInversionString( this.tonic ) )
+  toGoalInversionStrings( mapping ) {
+    return _.map( this.measures, x => x.toGoalInversionStrings( mapping ) )
   }
 
   toGoalInversionString() {
     return this.toGoalInversionStrings().join(' | ')
+  }
+
+  toEvents( chordFormat ) {
+    return _.flatMap( this.measures, measure => measure.toEvents( chordFormat ) )
   }
 }

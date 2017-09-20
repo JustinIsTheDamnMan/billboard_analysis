@@ -5,17 +5,27 @@ const fs = Promise.promisifyAll( require( 'fs' ) )
 const Song = require( './Song' )
 const SongSection = require( './SongSection' )
 
-module.exports =
-class SongBillboardReader {
+module.exports = class SongBillboardReader {
+  static extractID( filepath ) {
+    let filepathParts = filepath.split('/')
+    if ( filepathParts.length > 1 ) {
+      filepathParts = _.takeRight(2)(filepathParts)
+      let idMatcher = /[0]*([1-9]{1}[0-9]*)/
+      let idMatch = idMatcher.exec( filepathParts[0] )
+      if ( idMatch ) return idMatch[1]
+    }
+    return null
+  }
 
-  static async parseFile( filepath, id ) {
+  static async parseFile( filepath ) {
     let song = new Song() 
-    song.id = id
+    song.id = this.extractID( filepath )
     song.filepath = filepath
     song.rawData = await fs.readFileAsync( filepath, 'utf-8' )
 
     let context = {}
     let currentSection = null 
+    let previousSection = null
 
     const dataLines = 
       _.flow([
@@ -34,7 +44,7 @@ class SongBillboardReader {
 
       else if ( dataLine.metre ) {
         if ( currentSection ) {
-          song.sections.push( currentSection )
+          song.addSection( currentSection )
           currentSection = null
         }
         context.metre = dataLine.metre
@@ -42,7 +52,7 @@ class SongBillboardReader {
 
       else if ( dataLine.tonic ) {
         if ( currentSection ) {
-          song.sections.push( currentSection )
+          song.addSection( currentSection )
           currentSection = null
         }
         context.tonic = dataLine.tonic
@@ -50,23 +60,23 @@ class SongBillboardReader {
 
       else if ( dataLine.linetype === 'silence' ) {
         if ( currentSection ) {
-          song.sections.push( currentSection )
+          song.addSection( currentSection )
           currentSection = null
         }
-        song.sections.push( { type: 'silence' } )
+        song.addSection( new SongSection({ type: 'silence' }) )
       }
 
       else if ( dataLine.linetype === 'end' ) {
         if ( currentSection ) {
-          song.sections.push( currentSection )
+          song.addSection( currentSection )
           currentSection = null
         }
-        song.sections.push( { type: 'end' } )
+        song.addSection( new SongSection({ type: 'end' }) )
       }
 
       else if ( dataLine.section ) {
         if ( currentSection ) 
-          song.sections.push( currentSection )
+          song.addSection( currentSection )
 
         currentSection = new SongSection( _.assign( context, dataLine.section ) )
 
@@ -77,10 +87,11 @@ class SongBillboardReader {
       }
 
       else if ( dataLine.linetype === 'phrase' ) 
+        if ( currentSection ) {
         currentSection.addPhrase( 
             dataLine.timing,
             dataLine.rawPhrase )
-
+        }
     })( dataLines )
 
     return song;
@@ -123,6 +134,38 @@ class SongBillboardReader {
       return result
     }
 
+    let linePattern = /([^|]*)?(\|.*\|)?(.*)/
+    let lineMatch = linePattern.exec( data )
+    let zSection = false;
+
+    if ( lineMatch && lineMatch[1] ) {
+      let lineparts = _.flow([_.split(','), _.map( _.trim )])( lineMatch[1] )
+      for ( var linepart of lineparts ) {
+        let leader = linepart[0]
+        if ( /[A-Y]/.test( leader ) ) {
+          result.section = { timing: timing, label: linepart }
+        }
+        else if ( leader === "Z" ) {
+          result.section = { timing: timing, label: linepart }
+          zSection = true;
+        }
+        else if ( /[a-z]/.test( leader ) && /[^()]/.test( linepart ) ) {
+          if (! result.section) result.section = { timing: timing }
+          result.section.type = linepart
+        }
+      }
+    }
+
+    if ( lineMatch && lineMatch[2] ) {
+      if (! zSection) result.linetype = 'phrase'
+      result.rawPhrase = lineMatch[2]
+    }
+
+    if ( lineMatch && lineMatch[3] ) { 
+      result.annotation = lineMatch[3]
+    }
+
+    /*
     let lineparts = _.flow([_.split(','), _.map( _.trim )])( data )
 
     let beforeEventData = true;
@@ -158,8 +201,7 @@ class SongBillboardReader {
         result.annotation = linepart
       }
     }
-    
+    */ 
     return result
   }
-
 }

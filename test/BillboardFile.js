@@ -30,7 +30,7 @@ describe('SongBillboardReader', function() {
     it('should provide a list of correctly named and annotated sections', function() {
       return song.should.eventually.containSubset({
         sections:[
-          { type: 'silence' },
+          { types: ['silence'] },
           { label: 'A', types: ['intro'], metre: '4/4', tonic: 'G' },
           { label: 'B', types: ['verse'] , metre: '4/4', tonic: 'G' },
           { label: 'A', types: ['chorus'] , metre: '4/4', tonic: 'G' },
@@ -41,15 +41,15 @@ describe('SongBillboardReader', function() {
           { label: 'B\'', types: ['verse'] , metre: '4/4', tonic: 'G' },
           { label: 'A', types: ['chorus'] , metre: '4/4', tonic: 'G' },
           { label: 'A\'', types: ['coda'] , metre: '4/4', tonic: 'G' },
-          { type: 'silence' },
-          { type: 'end' }
+          { types: ['silence'] },
+          { types: ['end'] }
        ]}
     )})
 
     it('should correctly associate phrases to sections', function() {
       return song.should.eventually.containSubset({
         sections:[
-          { type: 'silence' },
+          { types: ['silence'] },
           { label: 'A', phrases: [ { timing: '0.30185941' }, 
                                    { timing: '6.665238095' }, 
                                    { timing: '12.933151927' },

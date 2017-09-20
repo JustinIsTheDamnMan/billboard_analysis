@@ -24,10 +24,9 @@ class Measure {
 
     if ( result.raw === '*' ) {
       result.isComplex = true
-      return result
     }
 
-    if (! metre ) {
+    else if (! metre ) {
       result.isInvalid = true
       result.error = "No metre provided."
     }
@@ -47,7 +46,13 @@ class Measure {
       result.beatsOverride     = parseInt( metreOverrideParts[1] )
       result.beatValueOverride = parseInt( metreOverrideParts[2] )
     }
-   
+
+    let effectiveBeats = result.beatsOverride 
+                         ? result.beatsOverride : result.beats
+  
+    if ( result.isComplex ) 
+      return result
+
     if (! tonic ) {
       result.isInvalid = true
       result.error = "No tonic provided."
@@ -86,8 +91,6 @@ class Measure {
     // Attempt to fill specified number of beats
     // using provided chord list
 
-    let effectiveBeats = result.beatsOverride 
-                         ? result.beatsOverride : result.beats
 
     if ( effectiveBeats % result.chords.length === 0 ) {
       result.chords = 
@@ -136,33 +139,132 @@ class Measure {
       }, 0 )
   }
 
-  toString() {
-    if ( this.isComplex ) return '*'
-
-    return _.map( this.chords, x => x.toString() ).join(' ')
+  m_( x, m ) {
+    return ( m && m[x] ) ? m[x] : x
   }
 
-  toRelativeString() {
-    if ( this.isComplex ) return '*'
-
-    return _.map( this.chords, x => x.toRelativeString( this.tonic ) ).join(' ')
+  complex() {
+    return _.times( this.beats, _.constant('*') )
   }
 
-  toRootThirdString() {
-    if ( this.isComplex ) return '*'
-
-    return _.map( this.chords, x => x.toRootThirdString( this.tonic ) ).join(' ')
+  complexA() {
+    return _.fill( Array( this.beats ), '*' )
   }
 
-  toMaxSeventhString() {
-    if ( this.isComplex ) return '*'
+  toStrings( m ) {
+    if ( this.isComplex ) return this.complexA()
 
-    return _.map( this.chords, x => x.toMaxSeventhString( this.tonic ) ).join(' ')
+    return _.map(
+        this.chords,
+        x => this.m_(
+          x.toString(),
+          m ) )
   }
 
-  toGoalInversionString() {
-    if ( this.isComplex ) return '*'
+  toString( m ) {
+    /*
+    if ( this.isComplex ) return this.complex()
 
-    return _.map( this.chords, x => x.toGoalInversionString( this.tonic ) ).join(' ')
+    return _.map( 
+        this.chords, 
+        x => this.m_(
+          x.toString(),
+          m ) ).join(' ')
+          */
+    return this.toStrings( m ).join(' ')
+  }
+  
+  toRelativeStrings( m ) {
+    if ( this.isComplex ) return this.complexA()
+
+    return _.map(
+        this.chords,
+        x => this.m_(
+          x.toRelativeString( this.tonic ),
+          m ) )
+  }
+
+  toRelativeString( m ) {
+/*    if ( this.isComplex ) return this.complex()
+
+    return _.map( 
+        this.chords, 
+        x => this.m_(
+          x.toRelativeString( this.tonic ),
+          m ) ).join(' ')
+          */
+    return this.toRelativeStrings( m ).join(' ')
+  }
+
+  toRootThirdStrings( m ) {
+    if ( this.isComplex ) return this.complexA()
+
+    return _.map(
+        this.chords,
+        x => this.m_(
+          x.toRootThirdString( this.tonic ),
+          m ) )
+  }
+
+  toRootThirdString( m ) {
+    /*if ( this.isComplex ) return this.complex()
+
+    return _.map( 
+        this.chords, 
+        x => this.m_(
+          x.toRootThirdString( this.tonic ),
+          m ) ).join(' ')*/
+    
+    return this.toRootThirdStrings( m ).join(' ')
+  }
+
+  toMaxSeventhStrings( m ) {
+    if ( this.isComplex ) return this.complexA()
+
+    return _.map(
+        this.chords,
+        x => this.m_(
+          x.toMaxSeventhString( this.tonic ),
+          m ) )
+  }
+
+  toMaxSeventhString( m ) {
+    /*
+    if ( this.isComplex ) return this.complex()
+
+    return _.map( 
+        this.chords, 
+        x => this.m_(
+          x.toMaxSeventhString( this.tonic ),
+          m ) ).join(' ')
+          */
+    return this.toMaxSeventhStrings( m ).join(' ')
+  }
+
+  toGoalInversionStrings( m ) {
+    if ( this.isComplex ) return this.complexA()
+
+    return _.map(
+        this.chords,
+        x => this.m_(
+          x.toGoalInversionString( this.tonic ),
+          m ) )
+  }
+
+  toGoalInversionString( m ) {
+    /*
+    if ( this.isComplex ) return this.complex()
+
+    return _.map( 
+        this.chords, 
+        x => this.m_(
+          x.toGoalInversionString( this.tonic ),
+          m ) ).join(' ')
+          */
+    return this.toGoalInversionStrings( m ).join(' ')
+  }
+
+  toEvents( chordFormat ) {
+    return _.map( this.chords, chord => chord.toString( chordFormat, this.tonic ) )
   }
 }

@@ -89,6 +89,11 @@ describe('The Chord', function() {
             bass: { raw: "b2" }
           })
       })
+
+      it('B:sus4(b7,9)', function() {
+        Chord.fromString( "B:sus4(b7,9)" ).toString()
+          .should.equal( "B:sus4(b7,9)" )
+      })
     })
 
     describe('should correctly handle special forms:', function() {

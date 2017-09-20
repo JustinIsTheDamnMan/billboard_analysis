@@ -42,7 +42,12 @@ class Note {
   }
 
   static rawIntervalLength( fromRawNote, toRawNote ) {
-    return Note.interval_distances[fromRawNote][toRawNote];
+    if ( fromRawNote == "*" || toRawNote == "*" ) return 0
+
+    let x = x => x === "Fb" ? "E" : x
+    let y = y => y === "Cb" ? "B" : y
+
+    return Note.interval_distances()[x(y(fromRawNote))][x(y(toRawNote))];
   }
 
   static intervalLength( fromNote, toNote ) {
@@ -73,7 +78,7 @@ class Note {
     return result
   }
 
-  static get interval_distances() {
+  static interval_distances() {
     return {
       'C':  { 'C':0,  'C#':1,  'Db':1,  'D':2,  'D#':3,  'Eb':3,  'E':4,  'F':5,  'F#':6,  'Gb':6,  'G':7,  'G#':8,  'Ab':8,  'A':9,  'A#':10, 'Bb':10, 'B':11 },
       'C#': { 'C':11, 'C#':0,  'Db':0,  'D':1,  'D#':2,  'Eb':2,  'E':3,  'F':4,  'F#':5,  'Gb':5,  'G':6,  'G#':7,  'Ab':7,  'A':8,  'A#':9,  'Bb':9,  'B':10 },

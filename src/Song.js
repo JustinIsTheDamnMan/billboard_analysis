@@ -35,7 +35,7 @@ module.exports = class Song {
   
     let song_annotations = [
           'id','title','artist','tonality','peak_rank','weeks_on_chart',
-          'year','era','quartile','sextile']
+          'year','era','quartile','sextile','time_bin','bin_quartile']
 
     if ( granularity === 'SONG' )
       return song_annotations
@@ -57,7 +57,9 @@ module.exports = class Song {
                 this.metadata.year,
                 this.metadata.era,
                 this.metadata.quartile,
-                this.metadata.sextile ]
+                this.metadata.sextile,
+                this.metadata.time_bin,
+                this.metadata.bin_quartile]
       
     switch ( granularity ) {
       case 'PHRASE':

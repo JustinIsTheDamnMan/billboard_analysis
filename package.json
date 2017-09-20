@@ -2,7 +2,7 @@
   "name": "billboard-analysis",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "runAnalysis.js",
   "scripts": {
     "test": "mocha --compilers js:babel-register --require babel-polyfill"
   },

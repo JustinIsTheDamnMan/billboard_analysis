@@ -166,6 +166,17 @@ describe('The Measure', function() {
       ]})
     })
 
+    it ('Can handle | B:sus4(b7,9) B:7 |', function() {
+      let measure = Measure.fromString( 'B:sus4(b7,9) B:7', '4/4', 'G' )
+
+      measure.should.containSubset({ chords: [
+        { raw: 'B:sus4(b7,9)' },
+        { raw: 'B:sus4(b7,9)' },
+        { raw: 'B:7' },
+        { raw: 'B:7' }
+      ]})
+    })
+
     it ('Detects error in other cases', function() {
       let measure = Measure.fromString( 'D:maj C:maj', '5/8', 'D')
       measure.should.have.property('isInvalid', true)

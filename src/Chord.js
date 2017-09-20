@@ -251,7 +251,26 @@ class Chord {
       return this.bass.raw
   }
 
-  toString() {
+  toString( outputStyle, tonic ) {
+    if ( outputStyle ) { 
+      switch( outputStyle ) {
+        case 'SOURCE':
+          return this.raw
+          break
+        case 'RELATIVE':
+          return this.toRelativeString( tonic )
+          break
+        case 'ROOT_3RD':
+          return this.toRootThirdString( tonic )
+          break
+        case 'MAX_7TH':
+          return this.toMaxSeventhString( tonic )
+          break
+        case 'GOAL_INV':
+          return this.toGoalInversionString( tonic )
+          break
+      }
+    } 
     return this.raw
   }
 

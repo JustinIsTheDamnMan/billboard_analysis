@@ -1,6 +1,5 @@
 const _ = require('lodash')
 const XLSX = require('xlsx')
-const MetadataStore = require('./MetadataStore')
 
 module.exports = class MetadataReader {
   static fromXlsxFile( filepath, sheetName ) {
@@ -11,4 +10,3 @@ module.exports = class MetadataReader {
     return _.keyBy( rawdata, 'ID' )
   }
 }
-
