@@ -7,7 +7,6 @@ Assuming that you have cloned this repository to
 
 ```sh
 cd ~/Projects/billboard-analysis
-git pull origin master
 npm install
-npm run test
+node runAnalysis.js
 ```
